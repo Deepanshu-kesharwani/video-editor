@@ -1,156 +1,186 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Enhanced Video Editor — Attractive Premiere-like UI</title>
-  <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <title>Mini Video Editor</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header>
-    <h1><i class="fas fa-video"></i> Enhanced Video Editor</h1>
-  </header>
-
-  <div class="app">
-    <aside class="panel left">
-      <div class="panel-header">
-        <strong>Media Uploads</strong>
-        <small>Upload video, audio, images, text</small>
-      </div>
-
-      <div class="media-list">
-        <label class="btn secondary"><i class="fas fa-film"></i> Add Video
-          <input type="file" id="videoInput" accept="video/*">
-        </label>
-
-        <div class="form-group">
-          <label for="addMode">Add as:</label>
-          <select id="addMode">
-            <option value="main">Main Video</option>
-            <option value="overlay">Overlay</option>
-          </select>
-          <label for="startTime">Start Time:</label>
-          <input type="number" id="startTime" min="0" value="0" step="0.5">
-          <label for="endTime">End Time:</label>
-          <input type="number" id="endTime" min="0" value="10" step="0.5">
-        </div>
-
-        <label class="btn secondary"><i class="fas fa-music"></i> Add Audio
-          <input type="file" id="audioInput" accept="audio/*">
-        </label>
-        <label class="btn secondary"><i class="fas fa-image"></i> Add Image
-          <input type="file" id="imageInput" accept="image/*">
-        </label>
-        <label class="btn secondary"><i class="fas fa-file-alt"></i> Add Text/Sub
-          <input type="file" id="textInputFile" accept=".txt,.srt">
-        </label>
-        <div id="itemsContainer"></div>
-
-        <!-- Added Layers Panel -->
-        <div class="panel-header">
-          <strong>Layers</strong>
-          <small>Drag to reorder</small>
-        </div>
-        <div id="layersPanel" class="layers-panel">
-          <!-- Layers will be added here dynamically -->
-        </div>
-      </div>
-    </aside>
-
-    <main class="panel preview">
-      <div class="preview-canvas">
-        <video id="videoEl" crossorigin="anonymous" style="display:none"></video>
-        <audio id="audioEl" crossorigin="anonymous" style="display:none"></audio>
-        <canvas id="previewCanvas" width="1280" height="720"></canvas>
-      </div>
-
-      <div class="controls">
-        <button class="btn" id="playBtn"><i class="fas fa-play"></i> Play</button>
-        <button class="btn secondary" id="pauseBtn"><i class="fas fa-pause"></i> Pause</button>
-        <button class="btn secondary" id="stopBtn"><i class="fas fa-stop"></i> Stop</button>
-        <button class="btn secondary" id="reverseBtn"><i class="fas fa-backward"></i> Reverse</button>
-        <button class="btn" id="exportBtn"><i class="fas fa-download"></i> Export</button>
-        <div class="speed-control">
-          <label>Speed:</label>
-          <input type="range" id="playbackSpeed" min="0.5" max="2" step="0.25" value="1">
-        </div>
-        <div style="margin-left:auto;color:var(--muted)">Time: <span id="timeLabel">0:00</span></div>
-      </div>
-
-      <div class="timeline">
-        <div class="panel-header"><small>Timeline & Trim</small><small>Duration: <span id="durLabel">0s</span></small></div>
-        <div class="range-row">
-          <input type="range" id="inRange" min="0" max="100" value="0" step="0.01">
-          <input type="range" id="outRange" min="0" max="100" value="100" step="0.01">
-        </div>
-        <div class="range-row">
-          <input type="range" id="seekRange" min="0" max="100" value="0" step="0.01" style="width:100%;">
-        </div>
-      </div>
-    </main>
-
-    <aside class="panel right">
-      <div class="tool">
-        <div class="panel-header">Overlays & Graphics</div>
-        <input type="text" id="textInput" placeholder="Add text overlay" />
-        <div class="tool-row">
-          <input type="color" id="textColor" value="#ffffff">
-          <input type="number" id="textSize" value="36" style="width:60px">
-          <button class="btn" id="addTextBtn"><i class="fas fa-plus"></i> Add Text</button>
-        </div>
-
-        <!-- Added Position & Transform panel -->
-        <div class="panel-header">Position & Transform</div>
-        <div id="propertiesPanel" class="properties-panel">
-          <div class="tool-row">
-            <label>X:</label>
-            <input type="number" id="posX" value="0" step="1">
-            <label>Y:</label>
-            <input type="number" id="posY" value="0" step="1">
-          </div>
-          <div class="tool-row">
-            <label>Width:</label>
-            <input type="number" id="elementWidth" value="100" step="1">
-            <label>Height:</label>
-            <input type="number" id="elementHeight" value="100" step="1">
-          </div>
-          <div class="tool-row">
-            <label>Opacity:</label>
-            <input type="range" id="elementOpacity" min="0" max="1" step="0.01" value="1">
-          </div>
-          <button class="btn secondary" id="deleteElementBtn"><i class="fas fa-trash"></i> Delete</button>
-        </div>
-
-        <div class="panel-header">Effects & Filters</div>
-        <div class="tool-row">
-          <button class="btn secondary" id="grayscaleBtn">Grayscale</button>
-          <button class="btn secondary" id="sepiaBtn">Sepia</button>
-        </div>
-
-        <div class="panel-header">Crop Tool</div>
-        <div class="tool-row">
-          <input type="number" id="cropX" placeholder="X" value="0" style="width:60px">
-          <input type="number" id="cropY" placeholder="Y" value="0" style="width:60px">
-          <input type="number" id="cropW" placeholder="Width" value="1280" style="width:60px">
-          <input type="number" id="cropH" placeholder="Height" value="720" style="width:60px">
-          <button class="btn" id="applyCropBtn">Apply Crop</button>
-        </div>
-
-        <div class="panel-header">Audio Controls</div>
-        <div class="tool-row">
-          <label>Volume:</label>
-          <input type="range" id="audioVol" min="0" max="1" step="0.01" value="1">
-        </div>
-
-        <button class="btn secondary" id="clearAllBtn"><i class="fas fa-trash"></i> Clear All</button>
-      </div>
-    </aside>
+<header id="topBar">
+  <div class="title">Mini Video Editor</div>
+  <div class="imports">
+    <label class="btn sm">Video
+      <input type="file" id="inputVideo" accept="video/mp4,video/webm" hidden multiple>
+    </label>
+    <label class="btn sm">Audio
+      <input type="file" id="inputAudio" accept="audio/*" hidden multiple>
+    </label>
+    <label class="btn sm">Image
+      <input type="file" id="inputImage" accept="image/*" hidden multiple>
+    </label>
+    <button class="btn sm" id="addTextBtn">Text</button>
+    <button class="btn sm" id="duplicateBtn" title="Duplicate Selected (Ctrl+D)">Duplicate</button>
+    <button class="btn sm" id="splitBtn" title="Split at Playhead (C)">Split</button>
+    <button class="btn sm" id="deleteBtn" title="Delete Selection (Del)">Delete</button>
+    <button class="btn sm" id="rippleBtn" title="Toggle Ripple Delete">Ripple: Off</button>
+    <button class="btn sm accent" id="renderBtn">Render</button>
+    <button class="btn sm" id="exportBtn">Export JSON</button>
   </div>
+  <div class="history">
+    <button class="btn sm" id="undoBtn" title="Undo (Ctrl+Z)">Undo</button>
+    <button class="btn sm" id="redoBtn" title="Redo (Ctrl+Y)">Redo</button>
+  </div>
+</header>
 
-  <footer><i class="fas fa-info-circle"></i> Built with modern UI – Inspired by pro editors</footer>
+<main id="workspace">
+  <aside id="leftPanel">
+    <div class="panel-header">LAYERS</div>
+    <ul id="layersList"></ul>
+  </aside>
 
-  <script src="script.js"></script>
+  <section id="centerPanel">
+    <div id="previewShell">
+      <div id="previewStage">
+        <video id="videoMain" playsinline></video>
+        <div id="overlayStage"></div>
+      </div>
+    </div>
+    <div id="playbackControls">
+      <div class="group">
+        <button class="btn sm" id="playPauseBtn" title="Space">Play</button>
+        <button class="btn sm" id="replayBtn" title="Replay (Shift+R)">Replay</button>
+        <button class="btn sm" id="frameBackBtn" title="Prev Frame (←)">◀︎</button>
+        <button class="btn sm" id="frameFwdBtn" title="Next Frame (→)">▶︎</button>
+        <button class="btn sm" id="markInBtn" title="I">[ In</button>
+        <button class="btn sm" id="markOutBtn" title="O">Out ]</button>
+        <button class="btn sm" id="loopBtn" title="Loop (L)">Loop: Off</button>
+      </div>
+      <div id="timeReadout">
+        <span>Cur</span><b id="tcCurrent">00:00:00.000</b>
+        <span>Dur</span><b id="tcDuration">00:00:00.000</b>
+        <span>In</span><b id="tcIn">--:--:--.--</b>
+        <span>Out</span><b id="tcOut">--:--:--.--</b>
+      </div>
+      <div class="group">
+        <label class="zoom-label">Zoom
+          <input type="range" id="timelineZoom" min="20" max="500" value="140">
+        </label>
+      </div>
+    </div>
+  </section>
+
+  <aside id="rightPanel">
+    <div class="panel-header">INSPECTOR</div>
+    <div id="inspector">
+      <p class="placeholder">Select a clip / overlay / audio</p>
+
+      <section id="videoClipSection" class="hidden">
+        <h4>Video Clip</h4>
+        <label>Start (timeline) <input type="number" step="0.001" id="clipStart"></label>
+        <label>Source In <input type="number" step="0.001" id="clipIn"></label>
+        <label>Source Out <input type="number" step="0.001" id="clipOut"></label>
+        <div class="trim-row">
+          <button class="btn xs" id="btnClipInSet" title="Set source In to playhead">Clip In ←</button>
+          <button class="btn xs" id="btnClipOutSet" title="Set source Out to playhead">Clip Out →</button>
+          <button class="btn xs" id="btnFitToRange" title="Fit clip to global In–Out">Fit Range</button>
+        </div>
+      </section>
+
+      <section id="overlaySection" class="hidden">
+        <h4>Overlay</h4>
+        <label>Start <input type="number" step="0.001" id="ovStart"></label>
+        <label>End <input type="number" step="0.001" id="ovEnd"></label>
+        <label>X <input type="number" id="ovX"></label>
+        <label>Y <input type="number" id="ovY"></label>
+        <label>Scale <input type="number" step="0.01" id="ovScale"></label>
+        <label>Opacity <input type="range" min="0" max="1" step="0.01" id="ovOpacity"></label>
+        <div id="textFields" class="hidden">
+          <label>Text <textarea id="ovText"></textarea></label>
+          <label>Font Size <input type="number" id="ovFontSize"></label>
+          <label>Color <input type="color" id="ovColor"></label>
+        </div>
+      </section>
+
+      <section id="audioSection" class="hidden">
+        <h4>Audio Clip</h4>
+        <label>Offset <input type="number" step="0.001" id="audOffset"></label>
+        <label>Volume <input type="range" min="0" max="1" step="0.01" id="audVolume"></label>
+        <label><input type="checkbox" id="audMute"> Mute</label>
+      </section>
+
+      <button class="btn sm accent hidden" id="applyBtn">Apply</button>
+    </div>
+  </aside>
+</main>
+
+<footer id="timelineArea">
+  <div id="rulerScroller">
+    <div id="timeRuler"></div>
+    <div id="playhead"></div>
+    <div id="inMarker" class="marker in hidden"></div>
+    <div id="outMarker" class="marker out hidden"></div>
+    <div id="rangeFill" class="range-fill hidden"></div>
+  </div>
+  <div id="tracksScroller">
+    <div class="track video-track" id="videoTrack">
+      <div class="track-label">V1</div>
+      <div class="track-content" id="videoTrackContent"></div>
+    </div>
+    <div class="track overlay-track" id="overlayTrack">
+      <div class="track-label">VO</div>
+      <div class="track-content" id="overlayTrackContent"></div>
+    </div>
+    <div class="track audio-track" id="audioTrack">
+      <div class="track-label">A1</div>
+      <div class="track-content" id="audioTrackContent"></div>
+    </div>
+  </div>
+</footer>
+
+<!-- Render Modal -->
+<div id="renderModal" class="modal hidden">
+  <div class="modal-content">
+    <h3>Render Video</h3>
+    <label>Range
+      <select id="renderRange">
+        <option value="all">Entire</option>
+        <option value="range">In-Out</option>
+      </select>
+    </label>
+    <label>Resolution
+      <select id="renderRes">
+        <option value="1280x720" selected>1280x720</option>
+        <option value="640x360">640x360</option>
+      </select>
+    </label>
+    <label>FPS
+      <select id="renderFPS">
+        <option>30</option><option>24</option><option>25</option><option>60</option>
+      </select>
+    </label>
+    <label><input type="checkbox" id="renderAudio" checked> Include Audio</label>
+    <label><input type="checkbox" id="renderOverlays" checked> Include Overlays</label>
+    <div id="renderProgress" class="hidden">
+      <div class="progress-bar"><div class="progress-fill" id="renderFill"></div></div>
+      <div class="progress-info">
+        <span id="renderPct">0%</span>
+        <span id="renderElapsed">0.0s</span>
+      </div>
+    </div>
+    <div class="render-buttons">
+      <button class="btn sm accent" id="startRenderBtn">Start</button>
+      <button class="btn sm danger hidden" id="cancelRenderBtn">Cancel</button>
+      <button class="btn sm hidden" id="downloadRenderBtn">Download Again</button>
+      <button class="btn sm" id="closeRenderBtn">Close</button>
+    </div>
+    <p id="renderStatus" class="status"></p>
+  </div>
+</div>
+
+<canvas id="hiddenCanvas" width="320" height="180" class="hidden"></canvas>
+<canvas id="renderCanvas" class="hidden"></canvas>
+
+<script src="app.js"></script>
 </body>
 </html>
