@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Mini Video Editor</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -11,7 +11,7 @@
   <div class="title">Mini Video Editor</div>
   <div class="imports">
     <label class="btn sm">Video
-      <input type="file" id="inputVideo" accept="video/mp4,video/webm" hidden multiple>
+      <input type="file" id="inputVideo" accept="video/*" hidden multiple>
     </label>
     <label class="btn sm">Audio
       <input type="file" id="inputAudio" accept="audio/*" hidden multiple>
@@ -24,8 +24,11 @@
     <button class="btn sm" id="splitBtn" title="Split at Playhead (C)">Split</button>
     <button class="btn sm" id="deleteBtn" title="Delete Selection (Del)">Delete</button>
     <button class="btn sm" id="rippleBtn" title="Toggle Ripple Delete">Ripple: Off</button>
+    <button class="btn sm" id="recordVoiceBtn" title="Record Voice Over (V)">Record VO</button>
+    <button class="btn sm" id="autoFitBtn" title="Fit entire timeline width">AutoFit</button>
     <button class="btn sm accent" id="renderBtn">Render</button>
     <button class="btn sm" id="exportBtn">Export JSON</button>
+
   </div>
   <div class="history">
     <button class="btn sm" id="undoBtn" title="Undo (Ctrl+Z)">Undo</button>
@@ -35,7 +38,7 @@
 
 <main id="workspace">
   <aside id="leftPanel">
-    <div class="panel-header">LAYERS</div>
+    <div class="panel-header">LAYERS (Top = Front)</div>
     <ul id="layersList"></ul>
   </aside>
 
@@ -64,8 +67,16 @@
       </div>
       <div class="group">
         <label class="zoom-label">Zoom
-          <input type="range" id="timelineZoom" min="20" max="500" value="140">
+          <input type="range" id="timelineZoom" min="20" max="400" value="60">
         </label>
+        <span id="importStatus" class="import-status"></span>
+      </div>
+      <div id="voStatus" class="vo-status hidden">
+        <span id="voState">Idle</span>
+        <div class="meter" title="Input level">
+          <div class="meter-level" id="voLevel"></div>
+        </div>
+        <button class="btn xs hidden" id="cancelVoBtn" title="Discard this recording">Discard</button>
       </div>
     </div>
   </section>
@@ -128,7 +139,7 @@
       <div class="track-content" id="videoTrackContent"></div>
     </div>
     <div class="track overlay-track" id="overlayTrack">
-      <div class="track-label">VO</div>
+      <div class="track-label">OV</div>
       <div class="track-content" id="overlayTrackContent"></div>
     </div>
     <div class="track audio-track" id="audioTrack">
@@ -138,7 +149,6 @@
   </div>
 </footer>
 
-<!-- Render Modal -->
 <div id="renderModal" class="modal hidden">
   <div class="modal-content">
     <h3>Render Video</h3>
